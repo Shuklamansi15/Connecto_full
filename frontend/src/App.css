@@ -1,0 +1,12 @@
+/* @import "tailwindcss";
+
+
+@plugin "@tailwindcss/typography";
+@plugin "@tailwindcss/forms";
+
+@theme {
+  --color-primary: #007bff;
+  --spacing-sm: 8px;
+  --font-display: "Satoshi", sans-serif;
+  --breakpoint-xl: 1280px;
+} */
