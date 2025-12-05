@@ -20,8 +20,10 @@ app.use(express.json());
 
 // CORS Configuration
 const allowedOrigins = [
-  "http://localhost:5173",  // frontend
-  "http://localhost:5174",  // admin panel
+"http://localhost:5173",                    // Local frontend
+  "http://localhost:5174",                    // Local admin
+  "https://connecto-full.vercel.app",         // Vercel frontend
+  "https://connecto-full-ksjc.vercel.app" // admin panel
 ];
 
 app.use(cors({
