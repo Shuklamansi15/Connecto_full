@@ -1,83 +1,87 @@
+// src/components/RelatedInfluencers.jsx
 import React, { useContext, useEffect, useState } from 'react'
-import { AppContext } from '../contex/AppContext'
 import { useNavigate } from 'react-router-dom'
+import { AppContext } from '../contex/AppContext' // keep your existing path
 
-const RelatedInfluencers = ({ category, infId }) => {
+const RelatedInfluencers = ({ category, speciality, infId }) => {
+  const navigate = useNavigate()
 
-    const { influencers } = useContext(AppContext)
-    const navigate = useNavigate()
+  // Accept either context name and default to empty array
+  const ctx = useContext(AppContext) || {}
+  const influencers = ctx.influencers || ctx.Influencers || []
 
-    const [relInf, setRelInf] = useState([])
+  // Accept either prop name (category or speciality)
+  const cat = (category || speciality || '').toString()
 
-    useEffect(() => {
-        // SAFETY CHECKS — avoids "Cannot read property 'length' of undefined"
-        if (!influencers || influencers.length === 0) {
-            setRelInf([])
-            return
-        }
+  const [relInf, setRelInf] = useState([])
 
-        if (!category) {
-            setRelInf([])
-            return
-        }
+  useEffect(() => {
+    if (!cat) {
+      setRelInf([])
+      return
+    }
+    if (!Array.isArray(influencers) || influencers.length === 0) {
+      setRelInf([])
+      return
+    }
 
-        // Filter safely
-        const related = influencers.filter(
-            (inf) => inf.category === category && inf._id !== infId
-        )
+    const filtered = influencers.filter(inf => {
+      // defensive checks
+      const infCat = (inf?.category || inf?.speciality || '').toString()
+      if (!infCat) return false
+      // case-insensitive compare and skip current influencer
+      return infCat.toLowerCase() === cat.toLowerCase() && String(inf._id) !== String(infId)
+    })
 
-        setRelInf(related)
-    }, [influencers, category, infId])
+    // Limit to a reasonable number, e.g., 4 to 8, to prevent overwhelming the user
+    setRelInf(filtered.slice(0, 8)) 
+  }, [influencers, cat, infId])
 
-    return (
-        <div className='flex flex-col items-center gap-4 my-16 text-gray-900 md:mx-10'>
-            <h1 className='text-3xl font-medium'>Other Influencers in {category || 'This Category'}</h1>
-            <p className='sm:w-1/3 text-center text-sm'>
-                Discover other popular content creators specializing in the same field.
-            </p>
+  if (!cat || relInf.length === 0) return null // nothing to show or no related influencers
 
-            <div className='w-full grid [grid-template-columns:repeat(auto-fill,minmax(175px,1fr))] grid-cols-auto gap-4 pt-5 gap-y-6 px-3 sm:px-0'>
-                {relInf.length > 0 ? (
-                    relInf.slice(0, 5).map((item, index) => (
-                        <div
-                            key={index}
-                            onClick={() => {
-                                navigate(`/consultation/${item._id}`)
-                                scrollTo(0, 0)
-                            }}
-                            className='border border-blue-200 rounded-xl overflow-hidden cursor-pointer hover:translate-y-[-10px] transition-all duration-500'
-                        >
-                            <img className='bg-blue-50' src={item.image} alt={item.name} />
-
-                            <div className='p-4'>
-                                <div className='flex items-center gap-2 text-sm text-center text-green-500'>
-                                    <p className='w-2 h-2 bg-green-500 rounded-full'></p>
-                                    <p>Available</p>
-                                </div>
-
-                                <p className='text-gray-900 text-lg font-medium'>{item.name}</p>
-                                <p className='text-gray-600 text-sm'>{item.category}</p>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <p className='text-gray-500 text-sm italic p-4'>
-                        No related influencers found.
-                    </p>
-                )}
+  return (
+    <div className="my-8 pt-4 border-t border-gray-200">
+      <h3 className="text-2xl font-bold text-gray-800 mb-6">
+        <span className="border-b-2 border-[#1999d5] pb-1">Related Influencers</span>
+      </h3>
+      
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        {relInf.map(inf => (
+          <div
+            key={inf._id}
+            onClick={() => {
+              navigate(`/consultation/${inf._id}`)
+              window.scrollTo(0, 0)
+            }}
+            // **UI/UX Fixes:** Better card styling with shadow, rounded corners, and hover effects
+            className="cursor-pointer bg-white border border-gray-100 rounded-lg shadow-sm overflow-hidden 
+                       hover:shadow-lg transform hover:scale-[1.02] transition-all duration-300"
+          >
+            {/* Image Container with fixed aspect ratio */}
+            <div className="w-full aspect-square overflow-hidden bg-gray-100"> 
+              <img
+                src={inf.image}
+                alt={inf.name}
+                // **UI/UX Fixes:** Ensure cover behavior for different image sizes
+                className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" 
+              />
             </div>
-
-            <button
-                onClick={() => {
-                    navigate('/influencers')
-                    scrollTo(0, 0)
-                }}
-                className='bg-blue-50 text-gray-600 px-12 py-3 rounded-full mt-10'
-            >
-                View All Influencers
-            </button>
-        </div>
-    )
+            
+            <div className="p-3 text-center">
+              {/* **UI/UX Fixes:** Clearer, bolder name */}
+              <p className="text-base font-semibold text-gray-900 truncate mb-1">
+                {inf.name}
+              </p>
+              {/* **UI/UX Fixes:** Distinct styling for category/speciality */}
+              <span className="inline-block text-xs font-medium text-[#1999d5] bg-indigo-100 px-2 py-0.5 rounded-full">
+                {inf.category || inf.speciality || 'Unspecified'}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 export default RelatedInfluencers

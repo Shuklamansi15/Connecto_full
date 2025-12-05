@@ -462,12 +462,16 @@ const Consultation = () => {
                         </div>
                     </div>
 
-                    {/* Related Influencers */}
-                    <div className='mt-10'>
-                        <h3 className='text-2xl font-bold text-gray-800 mb-4'>More in {infInfo.category || 'Category'} 🌟</h3>
-                        {/* Ensure category is present before passing to RelatedInfluencers */}
-                        {infInfo.category && <RelatedInfluencers speciality={infInfo.category} infId={infId} />}
-                    </div>
+                   {/* Related Influencers */}
+<div className='mt-10'>
+    <h3 className='text-2xl font-bold text-gray-800 mb-4'>More in {infInfo.category || 'Category'} 🌟</h3>
+
+    {/* FIX → pass correct prop name */}
+    {infInfo.category && (
+        <RelatedInfluencers category={infInfo.category} infId={infId} />
+    )}
+</div>
+
                 </div>
             </div>
         </div>
