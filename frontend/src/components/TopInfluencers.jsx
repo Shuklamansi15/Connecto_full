@@ -61,13 +61,13 @@ const TopInfluencers = () => {
                                 className={`flex items-center gap-2 text-xs font-semibold px-2 py-1 rounded-full w-fit mb-2 ${
                                     item.available 
                                         ? 'bg-green-100 text-green-700' 
-                                        : 'bg-yellow-100 text-yellow-700'
+                                        : 'bg-red-100 text-red-700'
                                 }`}
                             >
                                 <p className={`w-2 h-2 rounded-full ${
-                                    item.available ? 'bg-green-500' : "bg-yellow-500"
+                                    item.available ? 'bg-green-500' : "bg-red-500"
                                 }`}></p>
-                                <p>{item.available ? 'Available Now' : "Check Schedule"}</p>
+                                <p>{item.available ? 'Available Now' : "Not Available"}</p>
                             </div>
 
                             {/* Name + Category */}

@@ -5,7 +5,7 @@ import RelatedInfluencers from '../components/RelatedInfluencers' // Assuming yo
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { AppContext } from '../contex/AppContext'
-import { FaCommentDots, FaRegCalendarAlt, FaPhoneAlt, FaVideo ,FaInstagram, FaYoutube, FaFacebook, FaTwitter, FaTiktok } from "react-icons/fa"
+import { FaCommentDots, FaRegCalendarAlt,FaPhoneAlt, FaVideo ,FaInstagram, FaYoutube, FaFacebook, FaTwitter, FaTiktok } from "react-icons/fa";
 
 
 // Define primary colors for a cleaner look

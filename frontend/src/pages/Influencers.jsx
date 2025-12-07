@@ -171,10 +171,7 @@ const Influencers = () => {
                   >
                     <div className='relative'>
                       <img className='w-full h-full object-cover bg-gray-100 transition-opacity duration-300 group-hover:opacity-90' src={item.image} alt={item.name} />
-                      <div aria-live="polite" className={`absolute top-3 right-3 px-3 py-1 text-xs font-semibold rounded-full flex items-center gap-1 ${item.available ? 'bg-green-600 text-white shadow-md' : 'bg-yellow-100 text-yellow-800'}`}>
-                        <span className={`w-2 h-2 rounded-full ${item.available ? 'bg-white' : 'bg-yellow-500'}`}></span>
-                        {item.available ? 'Available Now' : 'Check Schedule'}
-                      </div>
+                     
                     </div>
 
                     <div className='p-5'>
@@ -185,6 +182,19 @@ const Influencers = () => {
                         <span className='text-xs font-semibold px-3 py-1 rounded-full bg-blue-50 text-gray-600 border border-gray-200 inline-block'>
                           {item.category}
                         </span>
+                         {/* Availability */}
+                            <div
+                                className={`flex items-center gap-2 text-xs font-semibold px-2 py-2 rounded-full w-fit mt-2 mb-2 ${
+                                    item.available 
+                                        ? 'bg-green-100 text-green-700' 
+                                        : 'bg-red-100 text-red-700'
+                                }`}
+                            >
+                                <p className={`w-2 h-2 rounded-full ${
+                                    item.available ? 'bg-green-500' : "bg-red-500"
+                                }`}></p>
+                                <p>{item.available ? 'Available Now' : "Not Available"}</p>
+                            </div>
 
                         {item.socialLinks && (
                           <div className="flex items-center gap-2 text-lg text-gray-600">
