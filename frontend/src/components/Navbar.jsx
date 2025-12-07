@@ -4,14 +4,10 @@ import { NavLink, useNavigate } from 'react-router-dom'
 import { AppContext } from '../contex/AppContext'
 import SearchBar from './SearchBar'
 
-
 const Navbar = () => {
-
   const navigate = useNavigate()
   const [showMenu, setShowMenu] = useState(false)
   const { token, setToken, userData } = useContext(AppContext)
-
-  // ⭐ Search State
   const [searchInput, setSearchInput] = useState("")
 
   const logout = () => {
@@ -20,7 +16,6 @@ const Navbar = () => {
     navigate('/login')
   }
 
-  // ⭐ Search Handler → Navigates to influencers?search=text
   const handleSearch = (e) => {
     e.preventDefault()
     if (searchInput.trim() !== "") {
@@ -29,140 +24,131 @@ const Navbar = () => {
   }
 
   return (
-    <div className='flex items-center justify-between text-sm py-4 mb-5 border-b border-b-[#ADADAD]'>
+    <div className='flex items-center justify-between text-sm h-20 py-4 mb-5 border-b border-gray-200 sticky top-0 bg-white z-50 px-4'>
 
       {/* Logo */}
       <img 
         onClick={() => navigate('/')} 
-        className='w-44 cursor-pointer' 
+        className='w-32 md:w-44 cursor-pointer hover:opacity-80 h-fit transition-all duration-300' 
         src={assets.logo1} 
         alt="logo" 
       />
 
-      {/* Desktop Menu */}
-      <ul className='md:flex items-start gap-5 font-medium hidden'>
-        <NavLink to='/'>
-          {({ isActive }) => (
-            <li className={`py-1 ${isActive ? "text-primary" : ""}`}>
-              HOME
-              <hr className={`h-0.5 bg-primary w-3/5 m-auto ${isActive ? "" : "hidden"}`} />
-            </li>
-          )}
-        </NavLink>
-
-        <NavLink to='/influencers'>
-          {({ isActive }) => (
-            <li className={`py-1 ${isActive ? "text-primary" : ""}`}>
-              INFLUENCERS
-              <hr className={`h-0.5 bg-primary w-3/5 m-auto ${isActive ? "" : "hidden"}`} />
-            </li>
-          )}
-        </NavLink>
-
-        <NavLink to='/about'>
-          {({ isActive }) => (
-            <li className={`py-1 ${isActive ? "text-primary" : ""}`}>
-              ABOUT
-              <hr className={`h-0.5 bg-primary w-3/5 m-auto ${isActive ? "" : "hidden"}`} />
-            </li>
-          )}
-        </NavLink>
-
-        <NavLink to='/contact'>
-          {({ isActive }) => (
-            <li className={`py-1 ${isActive ? "text-primary" : ""}`}>
-              CONTACT
-              <hr className={`h-0.5 bg-primary w-3/5 m-auto ${isActive ? "" : "hidden"}`} />
-            </li>
-          )}
-        </NavLink>
+      {/* Desktop Menu - Remains hidden on mobile */}
+      <ul className='md:flex items-start gap-6 font-medium hidden text-gray-700'>
+        {['HOME', 'INFLUENCERS', 'ABOUT', 'CONTACT'].map((item) => (
+          <NavLink key={item} to={item === 'HOME' ? '/' : `/${item.toLowerCase()}`}>
+            {({ isActive }) => (
+              <li className={`py-1 relative group cursor-pointer ${isActive ? "text-[#1999d5]" : "hover:text-black"}`}>
+                {item}
+                <hr className={`h-0.5 bg-[#1999d5] absolute bottom-0 left-0 transition-all duration-300 ${isActive ? "w-full" : "w-0 group-hover:w-1/2"}`} />
+              </li>
+            )}
+          </NavLink>
+        ))}
       </ul>
-<div className="hidden md:flex">
-  < SearchBar className="mr-4" />
-</div>
-      
 
-      {/* Right side */}
-      <div className='flex items-center gap-4'>
-        
+      {/* Search Section - Now visible on ALL screens via flex-1 */}
+      <div className="flex items-center flex-1 max-w-[150px] sm:max-w-sm px-2 sm:px-6">
+        <SearchBar className="w-full" />
+      </div>
+
+      {/* Right side Actions */}
+      <div className='flex items-center gap-2 sm:gap-4'>
         {token && userData ? (
           <div className='flex items-center gap-2 cursor-pointer group relative'>
-            <img className='w-8 h-8 rounded-full object-cover'
-              src={userData.image || assets.avatar_placeholder} />
+            <div className='p-0.5 border-2 border-transparent group-hover:border-[#1999d5] rounded-full transition-all'>
+              <img 
+                className='w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover shadow-sm'
+                src={userData.image || assets.avatar_placeholder} 
+                alt="user"
+              />
+            </div>
+            <img className='w-2.5 opacity-60 group-hover:rotate-180 transition-transform duration-300' src={assets.dropdown_icon} alt="dropdown" />
 
-            <img className='w-2.5' src={assets.dropdown_icon} alt="dropdown" />
-
-            <div className='absolute top-0 right-0 pt-14 text-base font-medium text-gray-600 z-20 hidden group-hover:block'>
-              <div className='min-w-48 bg-gray-50 rounded flex flex-col gap-4 p-4 shadow-md'>
-                <p onClick={() => navigate('/my-profile')} className='hover:text-black cursor-pointer'>My Profile</p>
-                <p onClick={() => navigate('/my-consultations')} className='hover:text-black cursor-pointer'>My Consultations</p>
-                <p onClick={logout} className='hover:text-black cursor-pointer'>Logout</p>
+            <div className='absolute top-full right-0 pt-3 text-base font-medium text-gray-600 z-20 hidden group-hover:block transition-all'>
+              <div className='min-w-56 bg-white border border-gray-100 rounded-lg flex flex-col shadow-2xl overflow-hidden'>
+                <p onClick={() => navigate('/my-profile')} className='px-4 py-3 hover:bg-gray-50 hover:text-[#1999d5] transition-colors'>My Profile</p>
+                <p onClick={() => navigate('/my-consultations')} className='px-4 py-3 hover:bg-gray-50 hover:text-[#1999d5] transition-colors'>My Consultations</p>
+                <hr className='border-gray-50' />
+                <p onClick={logout} className='px-4 py-3 hover:bg-red-50 hover:text-red-500 transition-colors'>Logout</p>
               </div>
             </div>
           </div>
         ) : (
           <button
             onClick={() => navigate('/login')}
-            className='bg-primary text-white px-8 py-3 rounded-full font-light hidden md:block'
+            className='bg-[#1999d5] text-white px-4 sm:px-8 py-2 sm:py-3 rounded-full font-light hidden sm:block hover:bg-[#1999d5]/90 transition-all active:scale-95'
           >
             Create Account
           </button>
         )}
 
         {/* Mobile Menu Icon */}
-        <img 
+        <button 
           onClick={() => setShowMenu(true)} 
-          className='w-6 md:hidden cursor-pointer' 
-          src={assets.menu_icon} 
-        />
+          className='p-2 md:hidden bg-gray-100 rounded-full transition-colors'
+        >
+          <img className='w-5 sm:w-6 cursor-pointer' src={assets.menu_icon} alt="menu" />
+        </button>
 
-        {/* Mobile Menu */}
-        <div className={`md:hidden ${showMenu ? 'fixed w-full' : 'h-0 w-0'} right-0 top-0 bottom-0 z-20 overflow-hidden bg-white transition-all`}>
-
-          <div className='flex items-center justify-between px-5 py-6'>
-            <img src={assets.logo1} className='w-36' />
-            <img
+        {/* Mobile Menu Overlay */}
+        <div className={`fixed inset-0 z-50 transition-all duration-500 transform ${showMenu ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'} bg-white`}>
+          <div className='flex items-center justify-between px-5 py-6 border-b'>
+            <img src={assets.logo1} className='w-36' alt="logo" />
+            <button 
               onClick={() => setShowMenu(false)}
-              src={assets.cross_icon}
-              className='w-7 cursor-pointer'
-            />
+              className='p-2 rounded-full bg-gray-100 transition-colors'
+            >
+              <img src={assets.cross_icon} className='w-6 cursor-pointer' alt="close" />
+            </button>
           </div>
 
-          {/* ⭐ Mobile Search Bar */}
-          <form 
-            onSubmit={handleSearch}
-            className='flex items-center border px-4 py-2 rounded-full bg-gray-100 mx-5 mt-3 mb-6'
-          >
-            <input
-              type='text'
-              placeholder='Search influencer...'
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              className='bg-transparent outline-none text-sm w-full'
-            />
-            <button type="submit">
-              <img src={assets.search_icon} className='w-4' />
-            </button>
-          </form>
+          <div className='p-6'>
+            {/* Keeping mobile internal search for redundancy or removing if top bar is enough */}
+            <form 
+              onSubmit={handleSearch}
+              className='flex items-center border border-gray-100 px-4 py-3 rounded-xl bg-gray-50 shadow-inner mb-8'
+            >
+              <input
+                type='text'
+                placeholder='Search influencer...'
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className='bg-transparent outline-none text-base w-full'
+              />
+              <button type="submit" className='p-1'>
+                <img src={assets.search_icon} className='w-5 opacity-60' alt="search" />
+              </button>
+            </form>
 
-          <ul className='flex flex-col items-center gap-2 mt-2 px-5 text-lg font-medium'>
-            <NavLink onClick={() => setShowMenu(false)} to='/'><p className='px-4 py-2'>HOME</p></NavLink>
-            <NavLink onClick={() => setShowMenu(false)} to='/influencers'><p className='px-4 py-2'>INFLUENCERS</p></NavLink>
-            <NavLink onClick={() => setShowMenu(false)} to='/about'><p className='px-4 py-2'>ABOUT</p></NavLink>
-            <NavLink onClick={() => setShowMenu(false)} to='/contact'><p className='px-4 py-2'>CONTACT</p></NavLink>
+            <ul className='flex flex-col gap-3 text-lg font-medium'>
+              {['HOME', 'INFLUENCERS', 'ABOUT', 'CONTACT'].map((label) => (
+                <NavLink 
+                  key={label}
+                  onClick={() => setShowMenu(false)} 
+                  to={label === 'HOME' ? '/' : `/${label.toLowerCase()}`}
+                  className={({isActive}) => `px-4 py-3 rounded-lg transition-colors ${isActive ? 'bg-[#1999d5]/10 text-[#1999d5]' : 'hover:bg-gray-50'}`}
+                >
+                  {label}
+                </NavLink>
+              ))}
 
-            {token ? (
-              <p className='px-4 py-2 mt-3 text-red-500'
-                onClick={() => { setShowMenu(false); logout(); }}>Logout</p>
-            ) : (
-              <p className='px-4 py-2 mt-3 text-primary'
-                onClick={() => { setShowMenu(false); navigate('/login'); }}>Login</p>
-            )}
-          </ul>
+              <div className='mt-6 pt-6 border-t border-gray-100'>
+                {token ? (
+                  <p className='px-4 py-3 text-red-500 bg-red-50 rounded-lg cursor-pointer'
+                    onClick={() => { setShowMenu(false); logout(); }}>Logout</p>
+                ) : (
+                  <p className='px-4 py-3 bg-[#1999d5] text-white rounded-lg text-center cursor-pointer shadow-md shadow-[#1999d5]/20'
+                    onClick={() => { setShowMenu(false); navigate('/login'); }}>Login</p>
+                )}
+              </div>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
   )
 }
 
-export default Navbar
+export default Navbar;

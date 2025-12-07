@@ -2,6 +2,8 @@ import React, { useContext, useEffect } from 'react'
 import { InfluencerContext } from '../../context/InfluencerContext'
 import { assets } from '../../assets/assets'
 import { AppContext } from '../../context/AppContext'
+import { FaTimesCircle, FaCheckCircle } from "react-icons/fa";
+
 
 const InfluencerDashboard = () => {
 
@@ -130,21 +132,18 @@ const InfluencerDashboard = () => {
                   ) : (
                     <div className="flex items-center gap-4">
 
-                      <img
-                        onClick={() => cancelConsultation(item._id)}
-                        className="w-7 h-7 cursor-pointer hover:opacity-70 transition"
-                        src={assets.cancel_icon}
-                        alt="Cancel"
-                        title="Cancel Consultation"
-                      />
+                      <FaTimesCircle
+    onClick={() => cancelConsultation(item._id)}
+    className="w-7 h-7 cursor-pointer text-red-500 hover:opacity-70 transition"
+    title="Cancel Consultation"
+/>
 
-                      <img
-                        onClick={() => completeConsultation(item._id)}
-                        className="w-7 h-7 cursor-pointer hover:opacity-70 transition"
-                        src={assets.tick_icon}
-                        alt="Complete"
-                        title="Mark as Complete"
-                      />
+<FaCheckCircle
+    onClick={() => completeConsultation(item._id)}
+    className="w-7 h-7 cursor-pointer text-green-500 hover:opacity-70 transition"
+    title="Mark as Complete"
+/>
+
 
                     </div>
                   )}

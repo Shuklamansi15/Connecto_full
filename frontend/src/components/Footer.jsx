@@ -20,7 +20,7 @@ const Footer = () => {
                 <div>
                     <img
                         onClick={() => handleNavigation('/')}
-                        className="w-44 h-16 object-cover object-center cursor-pointer"
+                        className="w-40 h-10 object-cover object-center cursor-pointer"
                         src={logo1}
                         alt="Connecto Logo"
                     />

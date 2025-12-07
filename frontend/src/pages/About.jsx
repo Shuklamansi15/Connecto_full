@@ -63,7 +63,7 @@ const About = () => {
           <div className={`p-5 rounded-xl border-l-4 border-[#1999d5] ${ACCENT_BG_CLASS}`}>
             <b className='text-lg font-bold text-gray-800 mb-2 block'>Our Vision: Empowering Connection</b>
             <p className='text-sm leading-relaxed text-gray-700'>
-              Our vision is to revolutionize the creator economy by bridging the gap between audiences/brands and qualified influencers. We strive to empower every user with technology-driven consultation solutions that are **fast, secure, and highly personalized** to help them achieve their learning or marketing goals.
+              Our vision is to revolutionize the creator economy by bridging the gap between audiences/brands and qualified influencers. We strive to empower every user with technology-driven consultation solutions that are fast, secure, and highly personalized to help them achieve their learning or marketing goals.
             </p>
           </div>
         </div>

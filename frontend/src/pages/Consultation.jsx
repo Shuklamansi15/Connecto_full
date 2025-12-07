@@ -5,6 +5,8 @@ import RelatedInfluencers from '../components/RelatedInfluencers' // Assuming yo
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { AppContext } from '../contex/AppContext'
+import { FaCommentDots, FaRegCalendarAlt, FaPhoneAlt, FaVideo ,FaInstagram, FaYoutube, FaFacebook, FaTwitter, FaTiktok } from "react-icons/fa"
+
 
 // Define primary colors for a cleaner look
 const PRIMARY_COLOR_CLASS = 'bg-[#1999d5]' // Primary Blue
@@ -15,10 +17,26 @@ const SUCCESS_COLOR_CLASS = 'bg-[#1999d5]'
 
 // Enhanced Mode Options for better visual selection
 const modeOptions = [
-    { value: 'chat', label: 'Priority Chat', icon: '💬', description: 'Text-based consultation.' },
-    { value: 'call', label: 'Phone Call', icon: '📞', description: 'Voice consultation.' },
-    { value: 'video', label: 'Video Call', icon: '📹', description: 'Face-to-face video session.' },
+    { 
+        value: 'chat', 
+        label: 'Priority Chat', 
+        icon: <FaCommentDots className="text-xl text-[#1999d5]" />, 
+        description: 'Text-based consultation.' 
+    },
+    { 
+        value: 'call', 
+        label: 'Phone Call', 
+        icon: <FaPhoneAlt className="text-xl text-[#1999d5]" />, 
+        description: 'Voice consultation.' 
+    },
+    { 
+        value: 'video', 
+        label: 'Video Call', 
+        icon: <FaVideo className="text-xl text-[#1999d5]" />, 
+        description: 'Face-to-face video session.' 
+    },
 ];
+
 
 const Consultation = () => {
     const { infId } = useParams()
@@ -314,13 +332,85 @@ const Consultation = () => {
                             </p>
                             <p className='text-sm text-gray-600 leading-relaxed'>{infInfo.about || 'No description provided.'}</p>
                         </div>
+                     
+
+{/* ---------- Social Media Links ---------- */}
+{infInfo?.socialLinks && (
+    <div className="mt-6">
+        <p className="text-lg font-bold text-gray-700 mb-3">Follow on Social Media</p>
+
+        <div className="flex items-center gap-4 text-2xl text-gray-600">
+
+            {infInfo.socialLinks.instagram && (
+                <a
+                    href={infInfo.socialLinks.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className=" text-[#1999d5] hover:text-pink-500 transition-all"
+                >
+                    <FaInstagram />
+                </a>
+            )}
+
+            {infInfo.socialLinks.youtube && (
+                <a
+                    href={infInfo.socialLinks.youtube}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#1999d5] hover:text-red-600 transition-all"
+                >
+                    <FaYoutube />
+                </a>
+            )}
+
+            {infInfo.socialLinks.facebook && (
+                <a
+                    href={infInfo.socialLinks.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#1999d5] hover:text-blue-600 transition-all"
+                >
+                    <FaFacebook />
+                </a>
+            )}
+
+            {infInfo.socialLinks.twitter && (
+                <a
+                    href={infInfo.socialLinks.twitter}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className=" text-[#1999d5] hover:text-blue-400 transition-all"
+                >
+                    <FaTwitter />
+                </a>
+            )}
+
+            {infInfo.socialLinks.tiktok && (
+                <a
+                    href={infInfo.socialLinks.tiktok}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#1999d5] hover:text-black transition-all"
+                >
+                    <FaTiktok />
+                </a>
+            )}
+
+        </div>
+    </div>
+)}
+
                     </div>
                 </div>
 
                 {/* ---------- Booking Process Steps ---------- */}
                 <div className='lg:col-span-2'>
                     <div className='bg-white p-8 rounded-2xl shadow-xl border border-gray-200'>
-                        <h3 className='text-2xl font-bold text-gray-800 mb-6 border-b pb-3'>Book Your Consultation Session 📅</h3>
+                        <h3 className='text-2xl font-bold text-gray-800 mb-6 border-b pb-3 flex items-center gap-2'>
+    <FaRegCalendarAlt className="text-[#1999d5] text-2xl" />
+    Book Your Consultation Session
+</h3>
+
 
                         {/* 1. Mode Selection */}
                         <div className='mb-8 border-b pb-6'>
