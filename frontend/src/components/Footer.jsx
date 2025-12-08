@@ -67,8 +67,8 @@ const Footer = () => {
                     <ul className="flex flex-col gap-2 text-gray-600">
                         {/* Note: In a real app, use mailto: and tel: links */}
                         <li className="hover:text-[#1999d5] transition-colors">
-                            <a href="tel:+919125919516">
-                                +91 91259 19516
+                            <a href="tel:+91 9899167518">
+                                +91 9899167518
                             </a>
                         </li>
                         <li className="hover:text-[#1999d5] transition-colors">
