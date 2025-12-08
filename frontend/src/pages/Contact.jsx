@@ -75,8 +75,8 @@ const Contact = () => {
                             <ContactInfoCard
                                 icon="📞"
                                 title="Business Inquiries"
-                                content="+1 (800) 555-0199"
-                                link={{ url: "tel:+18005550199", external: false }}
+                                content="+91 9899167518"
+                                link={{ url: "tel:+91 9899167518", external: false }}
                             />
                             <ContactInfoCard
                                 icon="📍"
