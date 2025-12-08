@@ -1,8 +1,9 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { InfluencerContext } from '../../context/InfluencerContext';
 import { AppContext } from '../../context/AppContext';
 import { assets } from '../../assets/assets';
 import { FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import ConfirmPopup from '../../components/ConfirmPopup';
 
 const InfluencerConsultations = () => {
 
@@ -16,25 +17,31 @@ const InfluencerConsultations = () => {
 
   const { slotDateFormat, currency } = useContext(AppContext);
 
+  // -------------------- NEW POPUP STATE --------------------
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupData, setPopupData] = useState({
+    title: "",
+    message: "",
+    onConfirm: () => {}
+  });
+
+  const openPopup = ({ title, message, onConfirm }) => {
+    setPopupData({ title, message, onConfirm });
+    setShowPopup(true);
+  };
+  // ----------------------------------------------------------
+
   useEffect(() => {
     if (iToken) getConsultations();
   }, [iToken]);
 
-  // ----------------------------------------------------------
-  // SAFE DATE FORMATTER → Supports:
-  // - DD_MM_YYYY
-  // - ISO strings
-  // - Timestamps
-  // ----------------------------------------------------------
   const formatDateForDisplay = (dateString) => {
     if (!dateString) return "N/A";
 
-    // Handle DD_MM_YYYY
     if (dateString.includes('_')) {
       return slotDateFormat(dateString);
     }
 
-    // ISO / timestamp
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return "Invalid Date";
 
@@ -65,7 +72,6 @@ const InfluencerConsultations = () => {
           <p className="text-center">Action</p>
         </div>
 
-        {/* EMPTY STATE */}
         {consultations.length === 0 ? (
           <p className="text-center py-8 text-gray-500">
             No consultations found.
@@ -129,7 +135,7 @@ const InfluencerConsultations = () => {
                   {currency}{amount}
                 </p>
 
-                {/* ACTION BUTTONS */}
+                {/* ACTION BUTTONS (UPDATED) */}
                 <div className="w-full sm:w-auto flex justify-start sm:justify-center items-center">
 
                   {item.cancelled ? (
@@ -138,17 +144,33 @@ const InfluencerConsultations = () => {
                     <p className="text-green-600 text-sm font-semibold">Completed</p>
                   ) : (
                     <div className="flex gap-4">
-                        <FaTimesCircle
-                          onClick={() => cancelConsultation(item._id)}
-                          className="w-7 h-7 cursor-pointer text-red-500 hover:opacity-70 transition"
-                          title="Cancel Consultation"
+
+                      {/* CANCEL */}
+                      <FaTimesCircle
+                        onClick={() =>
+                          openPopup({
+                            title: "Cancel Consultation?",
+                            message: `Are you sure you want to cancel this consultation?`,
+                            onConfirm: () => cancelConsultation(item._id)
+                          })
+                        }
+                        className="w-7 h-7 cursor-pointer text-red-500 hover:opacity-70 transition"
+                        title="Cancel Consultation"
                       />
                       
+                      {/* COMPLETE */}
                       <FaCheckCircle
-                          onClick={() => completeConsultation(item._id)}
-                          className="w-7 h-7 cursor-pointer text-green-500 hover:opacity-70 transition"
-                          title="Mark as Complete"
+                        onClick={() =>
+                          openPopup({
+                            title: "Mark as Completed?",
+                            message: `Have you completed this consultation?`,
+                            onConfirm: () => completeConsultation(item._id)
+                          })
+                        }
+                        className="w-7 h-7 cursor-pointer text-green-500 hover:opacity-70 transition"
+                        title="Mark as Complete"
                       />
+
                     </div>
                   )}
 
@@ -161,6 +183,19 @@ const InfluencerConsultations = () => {
         )}
 
       </div>
+
+      {/* CONFIRM POPUP */}
+      <ConfirmPopup
+        isOpen={showPopup}
+        title={popupData.title}
+        message={popupData.message}
+        onCancel={() => setShowPopup(false)}
+        onConfirm={() => {
+          popupData.onConfirm();
+          setShowPopup(false);
+        }}
+      />
+
     </div>
   );
 };

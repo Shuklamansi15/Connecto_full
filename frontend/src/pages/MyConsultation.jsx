@@ -4,6 +4,7 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import { assets } from '../assets/assets'
 import { AppContext } from '../contex/AppContext'
+import ConfirmPopup from '../components/ConfirmPopup'
 
 // Renamed component for influencer website context
 const MyConsultations = () => {
@@ -249,11 +250,15 @@ const MyConsultations = () => {
                                     )}
 
                                     {/* CANCEL button */}
-                                    {!item.cancelled && !item.isCompleted && (
-                                        <button onClick={() => cancelConsultation(item._id)} className='w-full text-gray-600 py-2 border rounded hover:bg-red-500 hover:text-white transition-all duration-300 mt-2'>
-                                            Cancel Consultation
-                                        </button>
-                                    )}
+                                   {!item.cancelled && !item.isCompleted && (
+    <button
+        onClick={() => ConfirmPopup(item._id, cancelConsultation)}
+        className='w-full text-gray-600 py-2 border rounded hover:bg-red-500 hover:text-white transition-all duration-300 mt-2'
+    >
+        Cancel Consultation
+    </button>
+)}
+
                                 </div>
                             </div>
                         )

@@ -4,7 +4,7 @@ import { assets } from '../assets/assets'
 const Header = () => {
   return (
     // Styling kept the same as it was fixed in the previous step
-    <div className='flex flex-col md:flex-row flex-wrap bg-[#1999d5] rounded-xl px-6 md:px-10 lg:px-20 py-8 md:py-0 mb-10'>
+    <div className='flex flex-col md:flex-row flex-wrap bg-[#1999d5] rounded-xl px-6 md:px-10 lg:px-20 py-10 mt-10 md:py-0 mb-10'>
 
       {/* left side */}
       <div className='md:w-1/2 flex flex-col items-start justify-center gap-4 py-10 md:py-20 lg:py-24 m-auto md:m-0'>
