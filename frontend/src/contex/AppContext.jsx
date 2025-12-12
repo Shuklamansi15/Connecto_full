@@ -1,5 +1,4 @@
 import { createContext, useEffect, useState } from "react";
-import { toast } from "react-toastify";
 import axios from "axios";
 
 export const AppContext = createContext();
@@ -13,9 +12,22 @@ const AppContextProvider = (props) => {
     const [aToken, setAToken] = useState(localStorage.getItem("aToken") || "");
     const [userData, setUserData] = useState(null);
 
-    // -----------------------------------------------------------------
+    // ⭐ NEW — Notification State (Replacement of Toast)
+    const [notification, setNotification] = useState({
+        show: false,
+        type: "success",
+        message: "",
+    });
+
+    const showNotification = (message, type = "success") => {
+        setNotification({ show: true, type, message });
+
+        setTimeout(() => {
+            setNotification({ show: false, type: "success", message: "" });
+        }, 2500);
+    };
+
     // ⭐ 1. PUBLIC INFLUENCERS LIST
-    // -----------------------------------------------------------------
     const getInfluencersData = async () => {
         try {
             const { data } = await axios.get(
@@ -26,16 +38,14 @@ const AppContextProvider = (props) => {
             if (data.success) {
                 setInfluencers(data.influencers);
             } else {
-                toast.error(data.message);
+                showNotification(data.message, "error");
             }
         } catch (error) {
-            toast.error(error.message);
+            showNotification(error.message, "error");
         }
     };
 
-    // -----------------------------------------------------------------
-    // ⭐ NEW — SEARCH INFLUENCERS (USED BY SEARCH BAR)
-    // -----------------------------------------------------------------
+    // ⭐ NEW — SEARCH INFLUENCERS
     const searchInfluencers = async (query) => {
         try {
             const { data } = await axios.post(
@@ -44,20 +54,15 @@ const AppContextProvider = (props) => {
                 { headers: {} }
             );
 
-            if (data.success) {
-                return data.influencers;
-            } else {
-                return [];
-            }
+            if (data.success) return data.influencers;
+            return [];
         } catch (error) {
             console.log(error);
             return [];
         }
     };
 
-    // -----------------------------------------------------------------
     // ⭐ 2. ADMIN — GET ALL INFLUENCERS
-    // -----------------------------------------------------------------
     const getAllInfluencersAdmin = async () => {
         try {
             const { data } = await axios.get(
@@ -68,16 +73,14 @@ const AppContextProvider = (props) => {
             if (data.success) {
                 setInfluencers(data.influencers);
             } else {
-                toast.error(data.message);
+                showNotification(data.message, "error");
             }
         } catch (error) {
-            toast.error(error.message);
+            showNotification(error.message, "error");
         }
     };
 
-    // -----------------------------------------------------------------
     // ⭐ 3. USER PROFILE
-    // -----------------------------------------------------------------
     const loadUserProfileData = async () => {
         if (!token) return;
 
@@ -90,7 +93,7 @@ const AppContextProvider = (props) => {
             if (data.success) {
                 setUserData(data.userData);
             } else {
-                toast.error(data.message);
+                showNotification(data.message, "error");
             }
         } catch (error) {
 
@@ -100,13 +103,11 @@ const AppContextProvider = (props) => {
                 setUserData(null);
             }
 
-            toast.error(error.message);
+            showNotification(error.message, "error");
         }
     };
 
-    // -----------------------------------------------------------------
     // ⭐ 4. USER LOGIN
-    // -----------------------------------------------------------------
     const loginUser = async (email, password) => {
         try {
             const { data } = await axios.post(
@@ -118,18 +119,16 @@ const AppContextProvider = (props) => {
             if (data.success) {
                 localStorage.setItem("token", data.token);
                 setToken(data.token);
-                toast.success("Login successful!");
+                showNotification("Login successful!", "success");
             } else {
-                toast.error(data.message);
+                showNotification(data.message, "error");
             }
         } catch (error) {
-            toast.error(error.message);
+            showNotification(error.message, "error");
         }
     };
 
-    // -----------------------------------------------------------------
     // ⭐ 5. USER SIGNUP
-    // -----------------------------------------------------------------
     const signupUser = async (name, email, password) => {
         try {
             const { data } = await axios.post(
@@ -139,18 +138,16 @@ const AppContextProvider = (props) => {
             );
 
             if (data.success) {
-                toast.success("Account created!");
+                showNotification("Account created!", "success");
             } else {
-                toast.error(data.message);
+                showNotification(data.message, "error");
             }
         } catch (error) {
-            toast.error(error.message);
+            showNotification(error.message, "error");
         }
     };
 
-    // -----------------------------------------------------------------
     // ⭐ 6. BOOK A CONSULTATION
-    // -----------------------------------------------------------------
     const bookConsultation = async (infId, consultationType, amount, date, slot) => {
         try {
             const { data } = await axios.post(
@@ -160,21 +157,19 @@ const AppContextProvider = (props) => {
             );
 
             if (data.success) {
-                toast.success("Consultation booked!");
+                showNotification("Consultation booked!", "success");
                 return data;
             } else {
-                toast.error(data.message);
+                showNotification(data.message, "error");
                 return null;
             }
         } catch (error) {
-            toast.error(error.message);
+            showNotification(error.message, "error");
             return null;
         }
     };
 
-    // -----------------------------------------------------------------
-    // ⭐ AUTO LOAD
-    // -----------------------------------------------------------------
+    // AUTO LOAD
     useEffect(() => {
         getInfluencersData();
     }, []);
@@ -206,10 +201,14 @@ const AppContextProvider = (props) => {
         loginUser,
         signupUser,
 
-        searchInfluencers, // <--- ADDED FOR SEARCH BAR
+        searchInfluencers,
 
         Influencers,
         setInfluencers,
+
+        notification,
+        showNotification,
+        setNotification
     };
 
     return (

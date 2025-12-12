@@ -16,11 +16,13 @@ const AdminContextProvider = (props) => {
     const [influencers, setInfluencers] = useState([]);
     const [dashData, setDashData] = useState(null);
 
-    // ========================= GET ALL INFLUENCERS =========================
+    // =====================================================
+    //                GET ALL INFLUENCERS 
+    // =====================================================
     const getAllInfluencers = async () => {
         try {
             const { data } = await axios.get(
-                backendUrl + '/api/admin/all-influencers',
+                backendUrl + "/api/admin/all-influencers",
                 { headers: { aToken } }
             );
 
@@ -34,11 +36,13 @@ const AdminContextProvider = (props) => {
         }
     };
 
-    // ========================= CHANGE AVAILABILITY =========================
+    // =====================================================
+    //                CHANGE INF AVAILABILITY 
+    // =====================================================
     const changeAvailability = async (infId) => {
         try {
             const { data } = await axios.post(
-                backendUrl + '/api/admin/change-availability',
+                backendUrl + "/api/admin/change-availability",
                 { infId },
                 { headers: { aToken } }
             );
@@ -54,11 +58,13 @@ const AdminContextProvider = (props) => {
         }
     };
 
-    // ========================= GET ALL CONSULTATIONS =========================
+    // =====================================================
+    //                GET ALL CONSULTATIONS 
+    // =====================================================
     const getAllConsultations = async () => {
         try {
             const { data } = await axios.get(
-                backendUrl + '/api/admin/consultations',
+                backendUrl + "/api/admin/consultations",
                 { headers: { aToken } }
             );
 
@@ -72,11 +78,13 @@ const AdminContextProvider = (props) => {
         }
     };
 
-    // ========================= CANCEL CONSULTATION =========================
+    // =====================================================
+    //                CANCEL CONSULTATION 
+    // =====================================================
     const cancelConsultation = async (consultationId) => {
         try {
             const { data } = await axios.post(
-                backendUrl + '/api/admin/cancel-consultation',
+                backendUrl + "/api/admin/cancel-consultation",
                 { consultationId },
                 { headers: { aToken } }
             );
@@ -92,11 +100,28 @@ const AdminContextProvider = (props) => {
         }
     };
 
-    // ========================= GET DASHBOARD DATA =========================
+    // =====================================================
+    //                GET INFLUENCER STATS 
+    // =====================================================
+    const getInfluencersStats = async () => {
+        try {
+            const { data } = await axios.get(
+                backendUrl + "/api/admin/influencers-stats",
+                { headers: { aToken } }
+            );
+            return data;  // page will handle setData()
+        } catch (error) {
+            return { success: false, message: "Failed to fetch stats" };
+        }
+    };
+
+    // =====================================================
+    //                GET DASHBOARD DATA 
+    // =====================================================
     const getDashData = async () => {
         try {
             const { data } = await axios.get(
-                backendUrl + '/api/admin/dashboard',
+                backendUrl + "/api/admin/dashboard",
                 { headers: { aToken } }
             );
 
@@ -105,13 +130,37 @@ const AdminContextProvider = (props) => {
             } else {
                 toast.error(data.message);
             }
-
         } catch (error) {
             toast.error(error.message || "Something went wrong");
         }
     };
+// =====================================================
+    //                     Update  Influencer
+    // =====================================================
 
-    // ========================= CONTEXT VALUE =========================
+const updateInfluencerData = async (infId, rates, modes, socialLinks) => {
+    try {
+        const { data } = await axios.post(
+            backendUrl + "/api/admin/update-influencer",
+            { infId, rates, modes, socialLinks },
+            { headers: { aToken } }
+        );
+
+        if (data.success) {
+            toast.success(data.message);
+            getAllInfluencers(); // refresh the list
+        } else {
+            toast.error(data.message);
+        }
+    } catch (error) {
+        toast.error(error.message || "Failed to update influencer");
+    }
+};
+
+    
+    // =====================================================
+    //                     CONTEXT VALUE
+    // =====================================================
     const value = {
         aToken,
         setAToken,
@@ -119,14 +168,16 @@ const AdminContextProvider = (props) => {
         influencers,
         getAllInfluencers,
         changeAvailability,
+        updateInfluencerData,
 
         consultations,
         getAllConsultations,
-
         cancelConsultation,
 
         dashData,
-        getDashData
+        getDashData,
+
+        getInfluencersStats, // ⭐ NEW FUNCTION ADDED
     };
 
     return (

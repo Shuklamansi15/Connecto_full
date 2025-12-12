@@ -17,7 +17,7 @@ const InfluencerConsultations = () => {
 
   const { slotDateFormat, currency } = useContext(AppContext);
 
-  // -------------------- NEW POPUP STATE --------------------
+  //------------------- NEW POPUP STATE -------------------
   const [showPopup, setShowPopup] = useState(false);
   const [popupData, setPopupData] = useState({
     title: "",

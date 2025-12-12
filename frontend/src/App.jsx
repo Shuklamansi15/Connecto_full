@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Home from './pages/Home';
 import Consultation from './pages/Consultation';
@@ -9,42 +9,54 @@ import Influencers from './pages/Influencers';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import MyProfile from './pages/MyProfile';
 import MyConsultations from './pages/MyConsultation';
 
+import { AppContext } from './contex/AppContext';
+import NotificationCard from './components/NotificationCard';
+
 const App = () => {
+  const { notification, setNotification } = useContext(AppContext);
+
   return (
-    // FIX 2: Apply a better outer container for max width and centering
-    // The original margin classes (mx-4 sm:mx-[10%]) are removed from here
     <div>
-      <ToastContainer/>
-      
+      {/* ⭐ NEW — Animated Notification Card */}
+      {notification.show && (
+        <NotificationCard
+          type={notification.type}
+          message={notification.message}
+          onClose={() =>
+            setNotification({ show: false, type: 'success', message: '' })
+          }
+        />
+      )}
+
       <Navbar />
-      
-      {/* Container for main content, using the original margin classes here for consistency */}
-      <div className='max-w-7xl mx-auto px-4 sm:px-8'> 
+
+      {/* Container for main content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-8">
         <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/influencers' element={<Influencers />} />
-          {/* Category-based filtering route for influencers */}
-          <Route path='/influencers/:category' element={<Influencers />} />
-          
-          <Route path='/my-profile' element={<MyProfile />} />
-          
-          {/* FIX 3: Updated path and element to plural 'my-consultations' / <MyConsultations /> */}
-          <Route path='/my-consultations' element={<MyConsultations />} /> 
-          {/* Specific influencer consultation booking page */}
-          <Route path='/consultation/:infId' element={<Consultation />} />
-          
-          <Route path='/login' element={<Login />} />
-          <Route path='/about' element={<About />} />
-          <Route path='/contact' element={<Contact />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/influencers" element={<Influencers />} />
+
+          {/* Category-based filtering */}
+          <Route path="/influencers/:category" element={<Influencers />} />
+
+          <Route path="/my-profile" element={<MyProfile />} />
+
+          {/* Plural fix */}
+          <Route path="/my-consultations" element={<MyConsultations />} />
+
+          {/* Consultation Booking */}
+          <Route path="/consultation/:infId" element={<Consultation />} />
+
+          <Route path="/login" element={<Login />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
       </div>
-      
-      <Footer/>
+
+      <Footer />
     </div>
   );
 };

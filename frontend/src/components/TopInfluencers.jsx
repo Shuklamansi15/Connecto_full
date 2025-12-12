@@ -16,7 +16,7 @@ const TopInfluencers = () => {
             {/* Header */}
             <div className='text-center mb-6'>
                 <h1 className='text-4xl font-extrabold text-gray-900 mb-3'>
-                    ⭐ Top Rated Influencers to Consult 
+                     Top Rated Influencers to Consult 
                 </h1>
                 <p className='max-w-xl mx-auto text-lg text-gray-500'>
                     Browse through our curated list of trusted experts to start your consultation today.
@@ -24,7 +24,7 @@ const TopInfluencers = () => {
             </div>
 
             {/* Influencer Cards */}
-            <div className='w-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 pt-5'>
+            <div className='w-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 gap-6 pt-5'>
                 {Influencers.slice(0, 10).map((item, index) => (
                     <div 
                         key={index}

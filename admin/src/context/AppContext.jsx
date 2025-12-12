@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, useState } from "react";
 
 export const AppContext = createContext();
 
@@ -15,15 +15,27 @@ const AppContextProvider = (props) => {
   ];
 
   // ----------------------------------------------------------
+  // 🔥 ADDED ONLY THIS (NotificationCard Logic)
+  // ----------------------------------------------------------
+  const [notification, setNotification] = useState(null);
+
+  const showNotification = (type, message, title) => {
+    setNotification({ type, message, title });
+  };
+
+  const hideNotification = () => {
+    setNotification(null);
+  };
+  // ----------------------------------------------------------
+
+  // ----------------------------------------------------------
   // ✔ Universal Date Formatter (Safe for ALL formats)
-  // Accepts: Date object, timestamp, ISO date, DD_MM_YYYY
   // ----------------------------------------------------------
   const slotDateFormat = (dateInput) => {
     if (!dateInput) return "Invalid Date";
 
     let date;
 
-    // Check for DD_MM_YYYY custom format
     if (typeof dateInput === "string" && dateInput.includes("_")) {
       const parts = dateInput.split("_");
       if (parts.length === 3) {
@@ -34,7 +46,6 @@ const AppContextProvider = (props) => {
       }
     }
 
-    // Otherwise convert normally
     if (!date || isNaN(date.getTime())) {
       date = new Date(dateInput);
     }
@@ -49,7 +60,7 @@ const AppContextProvider = (props) => {
   };
 
   // ----------------------------------------------------------
-  // ✔ Correct Age Calculator for "DD_MM_YYYY"
+  // ✔ Correct Age Calculator
   // ----------------------------------------------------------
   const calculateAge = (dob) => {
     if (!dob || typeof dob !== "string") return 0;
@@ -105,7 +116,7 @@ const AppContextProvider = (props) => {
   };
 
   // ----------------------------------------------------------
-  // ✔ Provider Values
+  // ✔ Provider Values (ONLY ADDED 3 new values)
   // ----------------------------------------------------------
   const value = {
     backendUrl,
@@ -114,6 +125,11 @@ const AppContextProvider = (props) => {
     calculateAge,
     formatSocialLinks,
     formatRates,
+
+    // 🔥 Added
+    notification,
+    showNotification,
+    hideNotification,
   };
 
   return (

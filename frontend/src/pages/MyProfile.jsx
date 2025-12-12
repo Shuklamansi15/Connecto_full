@@ -1,16 +1,20 @@
 import React, { useContext, useState } from 'react'
 import axios from 'axios'
-import { toast } from 'react-toastify'
 import { assets } from '../assets/assets'
 import { AppContext } from '../contex/AppContext'
 
-const PRIMARY_COLOR = '#1999d5' 
+// IMPORTED REACT ICONS
+import { FaUserEdit, FaSave, FaUser, FaPhone, FaCalendarDay, FaVenusMars, FaEnvelope } from 'react-icons/fa';
+import { IoIosCloudUpload } from 'react-icons/io';
+
+const PRIMARY_COLOR = '#1999d5'
 
 const MyProfile = () => {
     const [isEdit, setIsEdit] = useState(false)
     const [image, setImage] = useState(null)
 
-    const { token, backendUrl, userData, setUserData, loadUserProfileData } = useContext(AppContext)
+    // DESTRUCTURING UPDATED: Include showNotification
+    const { token, backendUrl, userData, setUserData, loadUserProfileData, showNotification } = useContext(AppContext)
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -20,7 +24,7 @@ const MyProfile = () => {
     const updateUserProfileData = async () => {
         try {
             if (!userData.name || !userData.phone || !userData.gender || !userData.dob) {
-                toast.warning('Please fill in all required fields.')
+                showNotification('Please fill in all required fields.', 'warning')
                 return
             }
 
@@ -36,16 +40,16 @@ const MyProfile = () => {
             })
 
             if (data.success) {
-                toast.success(data.message)
+                showNotification(data.message, 'success')
                 await loadUserProfileData()
                 setIsEdit(false)
                 setImage(null)
             } else {
-                toast.error(data.message)
+                showNotification(data.message, 'error')
             }
         } catch (error) {
             console.log(error)
-            toast.error(error.message)
+            showNotification(error.message, 'error')
         }
     }
 
@@ -57,20 +61,22 @@ const MyProfile = () => {
 
                 {/* Header and Edit/Save Button */}
                 <div className='flex justify-between items-center mb-8 border-b pb-4'>
-                    <h2 className='text-3xl font-bold text-gray-800'>My Profile 👤</h2>
+                    <h2 className='text-3xl font-bold text-gray-800 flex items-center gap-2'>
+                        <FaUser style={{ color: PRIMARY_COLOR }} /> My Profile
+                    </h2>
                     {isEdit ? (
                         <button
                             onClick={updateUserProfileData}
-                            className={`px-6 py-2 rounded-full font-semibold transition-all shadow-md text-white bg-green-600 hover:bg-green-700 hover:shadow-lg`}
+                            className={`px-4 sm:px-6 py-2 rounded-full font-semibold transition-all shadow-md text-white bg-green-600 hover:bg-green-700 hover:shadow-lg flex items-center gap-2`}
                         >
-                            Save Changes
+                            <FaSave className='text-lg' /> Save Changes
                         </button>
                     ) : (
                         <button
                             onClick={() => setIsEdit(true)}
-                            className={`border border-[#1999d5] text-[#1999d5] px-6 py-2 rounded-full font-semibold transition-all hover:bg-[#1999d5] hover:text-white`}
+                            className={`border border-[${PRIMARY_COLOR}] text-[${PRIMARY_COLOR}] px-4 sm:px-6 py-2 rounded-full font-semibold transition-all hover:bg-[${PRIMARY_COLOR}] hover:text-white flex items-center gap-2`}
                         >
-                            Edit Profile
+                            <FaUserEdit className='text-lg' /> Edit Profile
                         </button>
                     )}
                 </div>
@@ -85,8 +91,9 @@ const MyProfile = () => {
                                     src={image ? URL.createObjectURL(image) : userData.image || assets.default_user}
                                     alt={userData?.name || 'User Avatar'}
                                 />
+                                {/* Changed upload icon to React Icon */}
                                 <div className='absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-full bg-black/40'>
-                                    <img className='w-8' src={assets.upload_icon} alt="Upload" />
+                                    <IoIosCloudUpload className='text-white text-3xl' />
                                 </div>
                                 <input 
                                     onChange={(e) => setImage(e.target.files[0])} 
@@ -109,7 +116,7 @@ const MyProfile = () => {
                         {isEdit ? (
                             <input
                                 name="name"
-                                className='w-full text-4xl font-extrabold text-gray-800 bg-gray-50 border-b-2 border-[#1999d5] p-1 focus:outline-none focus:border-blue-500 transition-colors'
+                                className='w-full text-4xl font-extrabold text-gray-800 bg-gray-50 border-b-2 border-[${PRIMARY_COLOR}] p-1 focus:outline-none focus:border-blue-500 transition-colors'
                                 type="text"
                                 onChange={handleChange}
                                 value={userData.name}
@@ -118,7 +125,9 @@ const MyProfile = () => {
                         ) : (
                             <p className='font-extrabold text-4xl text-[#262626]'>{userData.name}</p>
                         )}
-                        <p className='text-lg font-medium text-gray-500 mt-1'>{userData.email}</p>
+                        <p className='text-lg font-medium text-gray-500 mt-1 flex items-center gap-2'>
+                           <FaEnvelope className='text-sm' /> {userData.email}
+                        </p>
                     </div>
                 </div>
 
@@ -126,16 +135,23 @@ const MyProfile = () => {
                 
                 {/* Contact Information */}
                 <div className='mb-10'>
-                    <h3 className='text-xl font-bold text-[#1999d5] mb-4'>📞 Contact Information</h3>
+                    {/* Replaced text icon with React Icon */}
+                    <h3 className='text-xl font-bold text-[${PRIMARY_COLOR}] mb-4 flex items-center gap-2'>
+                        <FaPhone /> Contact Information
+                    </h3>
                     <div className='grid grid-cols-1 sm:grid-cols-[1fr_2fr] gap-4 p-5 bg-gray-50 rounded-xl shadow-inner border border-gray-200'>
-                        <p className='font-semibold text-gray-700'>Email Address:</p>
+                        <p className='font-semibold text-gray-700 flex items-center gap-2'>
+                            <FaEnvelope style={{ color: PRIMARY_COLOR }} /> Email Address:
+                        </p>
                         <p className='text-blue-600 font-medium'>{userData.email}</p>
 
-                        <p className='font-semibold text-gray-700'>Phone Number:</p>
+                        <p className='font-semibold text-gray-700 flex items-center gap-2'>
+                            <FaPhone style={{ color: PRIMARY_COLOR }} /> Phone Number:
+                        </p>
                         {isEdit ? (
                             <input
                                 name="phone"
-                                className='w-full bg-white border border-gray-300 rounded-lg p-2 text-gray-800 focus:ring-1 focus:ring-[#1999d5] focus:border-[#1999d5]'
+                                className='w-full bg-white border border-gray-300 rounded-lg p-2 text-gray-800 focus:ring-1 focus:ring-[${PRIMARY_COLOR}] focus:border-[${PRIMARY_COLOR}]'
                                 type="text"
                                 onChange={handleChange}
                                 value={userData.phone}
@@ -149,13 +165,18 @@ const MyProfile = () => {
 
                 {/* Basic Information */}
                 <div className='mb-10'>
-                    <h3 className='text-xl font-bold text-[#1999d5] mb-4'>🎂 Basic Information</h3>
+                    {/* Replaced text icon with React Icon */}
+                    <h3 className='text-xl font-bold text-[${PRIMARY_COLOR}] mb-4 flex items-center gap-2'>
+                        <FaCalendarDay /> Basic Information
+                    </h3>
                     <div className='grid grid-cols-1 sm:grid-cols-[1fr_2fr] gap-4 p-5 bg-gray-50 rounded-xl shadow-inner border border-gray-200'>
-                        <p className='font-semibold text-gray-700'>Gender:</p>
+                        <p className='font-semibold text-gray-700 flex items-center gap-2'>
+                            <FaVenusMars style={{ color: PRIMARY_COLOR }} /> Gender:
+                        </p>
                         {isEdit ? (
                             <select
                                 name="gender"
-                                className='w-full bg-white border border-gray-300 rounded-lg p-2 text-gray-800 focus:ring-1 focus:ring-[#1999d5] focus:border-[#1999d5]'
+                                className='w-full bg-white border border-gray-300 rounded-lg p-2 text-gray-800 focus:ring-1 focus:ring-[${PRIMARY_COLOR}] focus:border-[${PRIMARY_COLOR}]'
                                 onChange={handleChange}
                                 value={userData.gender}
                             >
@@ -168,11 +189,13 @@ const MyProfile = () => {
                             <p className='text-gray-800 font-medium'>{userData.gender || 'Not provided'}</p>
                         )}
 
-                        <p className='font-semibold text-gray-700'>Date of Birth:</p>
+                        <p className='font-semibold text-gray-700 flex items-center gap-2'>
+                            <FaCalendarDay style={{ color: PRIMARY_COLOR }} /> Date of Birth:
+                        </p>
                         {isEdit ? (
                             <input
                                 name="dob"
-                                className='w-full bg-white border border-gray-300 rounded-lg p-2 text-gray-800 focus:ring-1 focus:ring-[#1999d5] focus:border-[#1999d5]'
+                                className='w-full bg-white border border-gray-300 rounded-lg p-2 text-gray-800 focus:ring-1 focus:ring-[${PRIMARY_COLOR}] focus:border-[${PRIMARY_COLOR}]'
                                 type='date'
                                 onChange={handleChange}
                                 value={userData.dob}

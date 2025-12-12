@@ -211,6 +211,7 @@ const InfluencerProfile = () => {
                     <option value="Art">Art</option>
                     <option value="Cooking">Cooking</option>
                     <option value="Travel">Travel</option>
+                     <option value="Lifestyle">Lifestyle</option>
                   </select>
                 ) : (
                   <p className="px-4 py-3 bg-gray-50 rounded-xl text-gray-700 font-semibold border border-transparent flex items-center gap-2">

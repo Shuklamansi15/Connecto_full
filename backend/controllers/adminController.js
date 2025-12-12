@@ -6,6 +6,12 @@ import validator from "validator";
 import { v2 as cloudinary } from "cloudinary";
 import userModel from "../models/userModel.js";
 
+// ⭐ NEW IMPORTS ADDED
+import Consultation from "../models/consultationModel.js";
+import Influencer from "../models/influencerModel.js";
+import User from "../models/userModel.js";
+
+
 // ------------------------ ADMIN LOGIN ------------------------
 const loginAdmin = async (req, res) => {
     try {
@@ -167,12 +173,98 @@ const adminDashboard = async (req, res) => {
     }
 };
 
+// ------------------------ UPDATE INFLUENCER ------------------------
+const updateInfluencer = async (req, res) => {
+  try {
+    const { infId, rates, modes, socialLinks } = req.body;
+
+    if (!infId) {
+      return res.status(400).json({ success: false, message: "Influencer ID is required" });
+    }
+
+    // Only parse if the incoming data is a string
+    const ratesObj = typeof rates === "string" ? JSON.parse(rates) : rates || {};
+    const modesArr = typeof modes === "string" ? JSON.parse(modes) : modes || [];
+    const socialLinksObj = typeof socialLinks === "string" ? JSON.parse(socialLinks) : socialLinks || {};
+
+    const updated = await influencerModel.findByIdAndUpdate(
+      infId,
+      {
+        ...(Object.keys(ratesObj).length && { rates: ratesObj }),
+        ...(modesArr.length && { modes: modesArr }),
+        ...(Object.keys(socialLinksObj).length && { socialLinks: socialLinksObj }),
+      },
+      { new: true }
+    ).select("-password");
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: "Influencer not found" });
+    }
+
+    res.json({ success: true, message: "Influencer updated successfully", influencer: updated });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+
+// ⭐ NEW FUNCTION ADDED — NO EXISTING CODE CHANGED
+ const getInfluencersStats = async (req, res) => {
+  try {
+    const influencers = await Influencer.find();
+
+    const result = await Promise.all(
+      influencers.map(async (inf) => {
+        // Match infId as string
+        const consultations = await Consultation.find({ infId: inf._id.toString() });
+
+        const totalConsultations = consultations.length;
+
+        const modeCount = { chat: 0, call: 0, video: 0 };
+        consultations.forEach((c) => {
+          if (c.mode in modeCount) modeCount[c.mode] += 1;
+        });
+
+        const preferredModePercent = {
+          chat: totalConsultations ? (modeCount.chat / totalConsultations) * 100 : 0,
+          call: totalConsultations ? (modeCount.call / totalConsultations) * 100 : 0,
+          video: totalConsultations ? (modeCount.video / totalConsultations) * 100 : 0,
+        };
+
+        const uniqueUsers = new Set(consultations.map((c) => c.userId)).size;
+
+        const totalRevenue = consultations.reduce((acc, c) => acc + (c.amount || 0), 0);
+
+        return {
+          influencerId: inf._id,
+          name: inf.name,
+          image: inf.image,
+          category: inf.category,
+          totalConsultations,
+          preferredModePercent,
+          uniqueUsers,
+          totalRevenue,
+        };
+      })
+    );
+
+    res.json({ success: true, data: result });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
+
 
 export {
     loginAdmin,
     consultationsAdmin,
     consultationCancel,
     addInfluencer,
+    getInfluencersStats,
     allInfluencers,
+    updateInfluencer,
     adminDashboard
 };

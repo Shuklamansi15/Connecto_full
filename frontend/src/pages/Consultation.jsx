@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState, useCallback } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { assets } from '../assets/assets'
-import RelatedInfluencers from '../components/RelatedInfluencers' // Assuming you renamed the component
+import RelatedInfluencers from '../components/RelatedInfluencers' 
 import axios from 'axios'
-import { toast } from 'react-toastify'
+// import { toast } from 'react-toastify' // REMOVED: toast import
 import { AppContext } from '../contex/AppContext'
 import { FaCommentDots, FaRegCalendarAlt,FaPhoneAlt, FaVideo ,FaInstagram, FaYoutube, FaFacebook, FaTwitter, FaTiktok } from "react-icons/fa";
 
@@ -19,7 +19,7 @@ const SUCCESS_COLOR_CLASS = 'bg-[#1999d5]'
 const modeOptions = [
     { 
         value: 'chat', 
-        label: 'Priority Chat', 
+        label: 'Chat', 
         icon: <FaCommentDots className="text-xl text-[#1999d5]" />, 
         description: 'Text-based consultation.' 
     },
@@ -40,14 +40,18 @@ const modeOptions = [
 
 const Consultation = () => {
     const { infId } = useParams()
-    // Defensive object destructuring from context
-    const ctx = useContext(AppContext) || {}
-    const influencers = ctx.influencers || ctx.Influencers || []
-    const currencySymbol = ctx.currencySymbol || '₹'
-    const backendUrl = ctx.backendUrl || (import.meta.env.VITE_BACKEND_URL || "http://localhost:4000")
-    const token = ctx.token || ''
-    const getInfluencersData = ctx.getInfluencersData || (() => {})
-    const user = ctx.user || ctx.userData || null
+    
+    // --- CONTEXT DESTRUCTURING (FIXED) ---
+    const { 
+        Influencers: influencers = [], // Use a default empty array
+        currencySymbol = '₹', 
+        backendUrl = (import.meta.env.VITE_BACKEND_URL || "http://localhost:4000"),
+        token = '',
+        getInfluencersData = (() => {}),
+        userData: user = null,
+        showNotification = (() => {}), // NEW: Import the notification function
+    } = useContext(AppContext) || {};
+    // ------------------------------------
 
     const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT']
 
@@ -168,13 +172,15 @@ const Consultation = () => {
     const bookConsultation = async () => {
 
         if (!token || !user?._id) {
-            toast.warning('Login to book consultation')
+            // Replaced toast.warning with showNotification
+            showNotification('Login to book consultation', 'warning')
             return navigate('/login')
         }
 
         const selectedDaySlots = infSlots[slotIndex]
         if (!Array.isArray(selectedDaySlots) || selectedDaySlots.length === 0 || !slotTime) {
-            toast.warning('Please select a valid date and time slot.')
+            // Replaced toast.warning with showNotification
+            showNotification('Please select a valid date and time slot.', 'warning')
             return
         }
 
@@ -182,13 +188,15 @@ const Consultation = () => {
         const amountValid = (typeof amount === 'number') || (typeof amount === 'string' && !isNaN(Number(amount)))
 
         if (!amountValid) {
-            toast.error(`Consultation rate for ${mode} mode is missing or invalid. Cannot book.`)
+            // Replaced toast.error with showNotification
+            showNotification(`Consultation rate for ${mode} mode is missing or invalid. Cannot book.`, 'error')
             return
         }
 
         const dateObj = selectedDaySlots.find(slot => slot.time === slotTime)?.datetime
         if (!dateObj) {
-            toast.error('Invalid slot selected.')
+            // Replaced toast.error with showNotification
+            showNotification('Invalid slot selected.', 'error')
             return
         }
 
@@ -233,16 +241,19 @@ const Consultation = () => {
             )
 
             if (data?.success) {
-                toast.success(data.message || 'Consultation booked!')
+                // Replaced toast.success with showNotification
+                showNotification(data.message || 'Consultation booked!', 'success')
                 getInfluencersData && getInfluencersData()
                 navigate('/my-consultations')
             } else {
-                toast.error(data?.message || 'Could not book consultation.')
+                // Replaced toast.error with showNotification
+                showNotification(data?.message || 'Could not book consultation.', 'error')
             }
 
         } catch (error) {
             console.error('Booking error:', error)
-            toast.error(error?.response?.data?.message || error?.message || 'Booking failed.')
+            // Replaced toast.error with showNotification
+            showNotification(error?.response?.data?.message || error?.message || 'Booking failed.', 'error')
         } finally {
             setIsLoading(false)
         }
@@ -332,7 +343,7 @@ const Consultation = () => {
                             </p>
                             <p className='text-sm text-gray-600 leading-relaxed'>{infInfo.about || 'No description provided.'}</p>
                         </div>
-                     
+                    
 
 {/* ---------- Social Media Links ---------- */}
 {infInfo?.socialLinks && (
@@ -449,33 +460,33 @@ const Consultation = () => {
                             </p>
                             <div className='flex gap-4 items-center w-full overflow-x-scroll py-2'>
                                 {Array.isArray(infSlots) && infSlots.length > 0 ? (
-                                    infSlots
-                                        .map((daySlots, index) => {
-                                            if (!Array.isArray(daySlots) || daySlots.length === 0) return null
+                                        infSlots
+                                            .map((daySlots, index) => {
+                                                if (!Array.isArray(daySlots) || daySlots.length === 0) return null
 
-                                            const dateObj = daySlots[0].datetime
-                                            const displayDate = getDisplayDate(dateObj)
+                                                const dateObj = daySlots[0].datetime
+                                                const displayDate = getDisplayDate(dateObj)
 
-                                            return (
-                                                <div
-                                                    onClick={() => {
-                                                        setSlotIndex(index)
-                                                        setSlotTime('') // Clear time on new day selection
-                                                    }}
-                                                    key={index}
-                                                    className={`text-center py-4 px-4 min-w-[110px] rounded-xl cursor-pointer transition-all duration-300 flex-shrink-0 transform ${
-                                                        slotIndex === index
-                                                            ? `${PRIMARY_COLOR_CLASS} text-white shadow-lg scale-[1.08] ring-4 ring-[#1999d5]/30` // Themed active state
-                                                            : 'border border-gray-300 text-gray-700 hover:bg-gray-100 hover:scale-[1.02]'
-                                                    }`}
-                                                >
-                                                    <p className='text-base font-bold'>{daysOfWeek[dateObj.getDay()]}</p>
-                                                    <p className='text-lg font-extrabold'>{dateObj.getDate()}</p>
-                                                    <p className='text-sm font-medium'>{displayDate.split(' ')[1]}</p>
-                                                    <p className='text-xs font-medium mt-1 opacity-80'>({daySlots.length} Slots)</p>
-                                                </div>
-                                            )
-                                        })
+                                                return (
+                                                    <div
+                                                        onClick={() => {
+                                                            setSlotIndex(index)
+                                                            setSlotTime('') // Clear time on new day selection
+                                                        }}
+                                                        key={index}
+                                                        className={`text-center py-4 px-4 min-w-[110px] rounded-xl cursor-pointer transition-all duration-300 flex-shrink-0 transform ${
+                                                            slotIndex === index
+                                                                ? `${PRIMARY_COLOR_CLASS} text-white shadow-lg scale-[1.08] ring-4 ring-[#1999d5]/30` // Themed active state
+                                                                : 'border border-gray-300 text-gray-700 hover:bg-gray-100 hover:scale-[1.02]'
+                                                        }`}
+                                                    >
+                                                        <p className='text-base font-bold'>{daysOfWeek[dateObj.getDay()]}</p>
+                                                        <p className='text-lg font-extrabold'>{dateObj.getDate()}</p>
+                                                        <p className='text-sm font-medium'>{displayDate.split(' ')[1]}</p>
+                                                        <p className='text-xs font-medium mt-1 opacity-80'>({daySlots.length} Slots)</p>
+                                                    </div>
+                                                )
+                                            })
                                 ) : (
                                     <p className='text-gray-500 italic p-2'>No available slots in the next 7 days.</p>
                                 )}
@@ -490,19 +501,19 @@ const Consultation = () => {
                             </p>
                             <div className='flex flex-wrap gap-3 w-full max-h-48 overflow-y-auto p-4 border border-gray-200 rounded-xl bg-gray-50'>
                                 {Array.isArray(infSlots[slotIndex]) && infSlots[slotIndex].length > 0 ? (
-                                    infSlots[slotIndex].map((slot, index) => (
-                                        <p
-                                            onClick={() => setSlotTime(slot.time)}
-                                            key={index}
-                                            className={`text-base font-medium flex-shrink-0 px-6 py-2 rounded-full cursor-pointer transition-colors duration-200 ${
-                                                slot.time === slotTime
-                                                    ? `${SUCCESS_COLOR_CLASS} text-white shadow-md shadow-[#1999d5]/50 transform scale-105` // Themed active state
-                                                    : 'text-gray-700 border border-blue-300 hover:bg-blue-50'
-                                            }`}
-                                        >
-                                            {slot.time.toLowerCase()}
-                                        </p>
-                                    ))
+                                        infSlots[slotIndex].map((slot, index) => (
+                                            <p
+                                                onClick={() => setSlotTime(slot.time)}
+                                                key={index}
+                                                className={`text-base font-medium flex-shrink-0 px-6 py-2 rounded-full cursor-pointer transition-colors duration-200 ${
+                                                    slot.time === slotTime
+                                                        ? `${SUCCESS_COLOR_CLASS} text-white shadow-md shadow-[#1999d5]/50 transform scale-105` // Themed active state
+                                                        : 'text-gray-700 border border-blue-300 hover:bg-blue-50'
+                                                }`}
+                                            >
+                                                {slot.time.toLowerCase()}
+                                            </p>
+                                        ))
                                 ) : (
                                     <p className='text-gray-500 italic p-2'>No available time slots on this day. Please select another date.</p>
                                 )}
@@ -552,7 +563,7 @@ const Consultation = () => {
                         </div>
                     </div>
 
-                   {/* Related Influencers */}
+                    {/* Related Influencers */}
 <div className='mt-10'>
     <h3 className='text-2xl font-bold text-gray-800 mb-4'>More in {infInfo.category || 'Category'} 🌟</h3>
 
